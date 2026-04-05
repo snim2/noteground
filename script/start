@@ -10,7 +10,7 @@ if [ ! -d node_modules ]; then
   ./script/setup
 fi
 
-mkdir -p data/database data/uploads
+mkdir -p data/database data/uploads data/plugins data/themes
 
 # WP Playground stores site files at a path derived from the project directory.
 # The hash is SHA-256 of the absolute project path (no trailing newline).
@@ -36,7 +36,22 @@ echo "    Credentials: admin / password"
 echo "    Press Ctrl+C to stop."
 echo ""
 
+MOUNT_ARGS=()
+for plugin_dir in data/plugins/*/; do
+  [ -d "$plugin_dir" ] || continue
+  name="$(basename "$plugin_dir")"
+  MOUNT_ARGS+=(--mount "$(pwd)/$plugin_dir:/wordpress/wp-content/plugins/$name")
+  echo "==> Mounting custom plugin: $name"
+done
+for theme_dir in data/themes/*/; do
+  [ -d "$theme_dir" ] || continue
+  name="$(basename "$theme_dir")"
+  MOUNT_ARGS+=(--mount "$(pwd)/$theme_dir:/wordpress/wp-content/themes/$name")
+  echo "==> Mounting custom theme: $name"
+done
+
 exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint=blueprint.json \
   --port=9400 \
-  --login
+  --login \
+  "${MOUNT_ARGS[@]}"
