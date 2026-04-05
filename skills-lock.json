@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "blueprint": {
+      "source": "wordpress/agent-skills",
+      "sourceType": "github",
+      "computedHash": "1bac422b386d74aba6abac2e8db31645a9a126d08673afa04d65604dbc5e6c0d"
+    },
+    "wp-playground": {
+      "source": "wordpress/agent-skills",
+      "sourceType": "github",
+      "computedHash": "1125d6cd0d9097ae478d4b067cf02f2b2e5f0c6690209aa05c97a3e13dbb8921"
+    }
+  }
+}
