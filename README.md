@@ -15,19 +15,21 @@ A Notion-like personal knowledge base running locally via [WordPress Playground]
 
 WordPress Playground runs WordPress entirely in a local Node.js process (via WebAssembly). No PHP installation, no database daemon, no web server configuration required.
 
-Two directories are mounted from the private submodule into the WordPress VFS:
+WP Playground caches the site at a deterministic path derived from the project directory (SHA-256 of the absolute path):
 
-| Host path | VFS path | Contents |
-|---|---|---|
-| `data/` | `/wordpress/wp-content/database` | SQLite database (`.ht.sqlite`) |
-| `data/uploads/` | `/wordpress/wp-content/uploads` | Media library |
+```
+~/.wordpress-playground/sites/<sha256-of-project-path>/
+```
+
+`script/start` copies any saved database and uploads from `./data` into the site cache before launching. After a writing session, `script/save` copies them back out and commits to the private repo.
 
 ## How public/private separation works
 
 ```
 scratch-wordpress/          ← this repo (public)
 └── data/                   ← git submodule → your-notes-data (private)
-    ├── .ht.sqlite          ← SQLite database with all your notes
+    ├── database/
+    │   └── .ht.sqlite      ← SQLite database with all your notes
     └── uploads/            ← media library
 ```
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # script/reset
-# Wipe the stored Playground site and start fresh from the blueprint.
+# Wipe the stored Playground site cache and start fresh from the blueprint.
+# Note: your notes in ./data are NOT deleted by this script.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -10,14 +11,15 @@ if [ ! -d node_modules ]; then
   ./script/setup
 fi
 
-echo "==> Resetting WordPress Playground (all site data will be deleted)..."
+SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$(pwd)" | shasum -a 256 | cut -d' ' -f1)"
+
+echo "==> Resetting WordPress Playground (site cache will be deleted; ./data is untouched)."
 echo "    Press Ctrl+C within 5 seconds to cancel."
 sleep 5
+
+rm -rf "$SITE_DIR"
 
 exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint=blueprint.json \
   --port=9400 \
-  --login \
-  --reset \
-  --mount ./data:/wordpress/wp-content/database \
-  --mount ./data/uploads:/wordpress/wp-content/uploads
+  --login

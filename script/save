@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # script/save
-# Commit the current database and media library to the private data repo and
-# update the submodule pointer in the public repo.
+# Copy the current database and media library out of the WP Playground site
+# cache into the private data submodule, then commit and push.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -12,19 +12,30 @@ if [ ! -f .gitmodules ] || ! grep -q 'path = data' .gitmodules; then
   exit 1
 fi
 
-if [ ! -f data/.ht.sqlite ]; then
-  echo "Error: no database found at data/.ht.sqlite"
+SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$(pwd)" | shasum -a 256 | cut -d' ' -f1)"
+DB_FILE="$SITE_DIR/wp-content/database/.ht.sqlite"
+UPLOADS_DIR="$SITE_DIR/wp-content/uploads"
+
+if [ ! -f "$DB_FILE" ]; then
+  echo "Error: no database found at $DB_FILE"
   echo "Start WordPress at least once with ./script/start before saving."
   exit 1
 fi
 
-TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+mkdir -p data/database data/uploads
 
+echo "==> Copying database and uploads from site cache..."
+cp "$DB_FILE" data/database/.ht.sqlite
+if [ -d "$UPLOADS_DIR" ] && [ -n "$(ls -A "$UPLOADS_DIR")" ]; then
+  cp -r "$UPLOADS_DIR/." data/uploads/
+fi
+
+TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 echo "==> Saving snapshot: $TIMESTAMP"
 
 # Commit the database and media library in the private submodule repo.
 cd data
-git add .ht.sqlite uploads/
+git add database/ uploads/
 git diff --cached --quiet && echo "    No changes to save." && exit 0
 git commit -m "notes: $TIMESTAMP"
 git push

@@ -10,6 +10,26 @@ if [ ! -d node_modules ]; then
   ./script/setup
 fi
 
+mkdir -p data/database data/uploads
+
+# WP Playground stores site files at a path derived from the project directory.
+# The hash is SHA-256 of the absolute project path (no trailing newline).
+SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$(pwd)" | shasum -a 256 | cut -d' ' -f1)"
+DB_DIR="$SITE_DIR/wp-content/database"
+UPLOADS_DIR="$SITE_DIR/wp-content/uploads"
+
+# Restore saved data into the site cache before starting.
+if [ -f data/database/.ht.sqlite ]; then
+  mkdir -p "$DB_DIR"
+  cp data/database/.ht.sqlite "$DB_DIR/.ht.sqlite"
+  echo "==> Restored database from ./data/database"
+fi
+if [ -n "$(ls -A data/uploads 2>/dev/null | grep -v '\.gitkeep')" ]; then
+  mkdir -p "$UPLOADS_DIR"
+  cp -r data/uploads/. "$UPLOADS_DIR/"
+  echo "==> Restored uploads from ./data/uploads"
+fi
+
 echo "==> Starting WordPress Playground..."
 echo "    Admin URL: http://127.0.0.1:9400/wp-admin"
 echo "    Credentials: admin / password"
@@ -19,6 +39,4 @@ echo ""
 exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint=blueprint.json \
   --port=9400 \
-  --login \
-  --mount ./data:/wordpress/wp-content/database \
-  --mount ./data/uploads:/wordpress/wp-content/uploads
+  --login
