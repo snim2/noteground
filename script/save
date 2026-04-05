@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# script/save
+# Commit the current database state to the private data repo and update the
+# submodule pointer in the public repo.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ ! -f .gitmodules ] || ! grep -q 'path = data' .gitmodules; then
+  echo "Error: data submodule is not configured."
+  echo "Run ./script/init-data <private-repo-url> first."
+  exit 1
+fi
+
+if [ ! -f data/.ht.sqlite ]; then
+  echo "Error: no database found at data/.ht.sqlite"
+  echo "Start WordPress at least once with ./script/start before saving."
+  exit 1
+fi
+
+TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+echo "==> Saving database snapshot: $TIMESTAMP"
+
+# Commit the database in the private submodule repo.
+cd data
+git add .ht.sqlite
+git diff --cached --quiet && echo "    No changes to save." && exit 0
+git commit -m "notes: $TIMESTAMP"
+git push
+
+# Update the submodule pointer in the public repo.
+cd ..
+git add data
+git diff --cached --quiet && exit 0
+git commit -m "chore: update data submodule to $TIMESTAMP"
+
+echo ""
+echo "==> Saved. Run 'git push' in this repo to publish the updated submodule pointer."

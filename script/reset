@@ -18,4 +18,5 @@ exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint=blueprint.json \
   --port=9400 \
   --login \
-  --reset
+  --reset \
+  --mount ./data:/wordpress/wp-content/database

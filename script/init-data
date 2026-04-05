@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# script/init-data
+# Wire up a private Git repo as the data submodule for note storage.
+# Usage: ./script/init-data <private-repo-url>
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ $# -ne 1 ]; then
+  echo "Usage: ./script/init-data <private-repo-url>"
+  echo ""
+  echo "Create a new private repository (e.g. on GitHub), then pass its URL here."
+  echo "Example: ./script/init-data git@github.com:you/notes-data.git"
+  exit 1
+fi
+
+REPO_URL="$1"
+
+if [ -f .gitmodules ] && grep -q 'path = data' .gitmodules; then
+  echo "Error: data submodule is already configured. Check .gitmodules."
+  exit 1
+fi
+
+echo "==> Adding private data repo as submodule at ./data ..."
+
+# Clean up any leftover state from a previously failed run.
+rm -rf data .git/modules/data
+git rm -rf --cached data 2>/dev/null || true
+
+# git submodule add requires the remote to have at least one commit.
+# If the repo is empty, seed it with an initial commit before proceeding.
+TMPDIR_SEED="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR_SEED"' EXIT
+
+git clone "$REPO_URL" "$TMPDIR_SEED/seed" 2>&1
+if [ -z "$(git -C "$TMPDIR_SEED/seed" log --oneline 2>/dev/null)" ]; then
+  echo "    Remote is empty — creating initial commit..."
+  git -C "$TMPDIR_SEED/seed" commit --allow-empty -m "chore: initialise notes data repo"
+  git -C "$TMPDIR_SEED/seed" push
+fi
+
+git submodule add "$REPO_URL" data
+
+echo ""
+echo "==> Submodule added. Committing .gitmodules to the public repo..."
+git add .gitmodules data
+git commit -m "Add private data submodule for note storage"
+
+echo ""
+echo "==> Done. Your notes will be stored in: $REPO_URL"
+echo "    Run ./script/start to launch WordPress."
+echo "    Run ./script/save to commit and push your notes after a session."
