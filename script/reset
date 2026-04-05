@@ -19,4 +19,5 @@ exec ./node_modules/.bin/wp-playground-cli start \
   --port=9400 \
   --login \
   --reset \
-  --mount ./data:/wordpress/wp-content/database
+  --mount ./data:/wordpress/wp-content/database \
+  --mount ./data/uploads:/wordpress/wp-content/uploads

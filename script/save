@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # script/save
-# Commit the current database state to the private data repo and update the
-# submodule pointer in the public repo.
+# Commit the current database and media library to the private data repo and
+# update the submodule pointer in the public repo.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -20,11 +20,11 @@ fi
 
 TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
-echo "==> Saving database snapshot: $TIMESTAMP"
+echo "==> Saving snapshot: $TIMESTAMP"
 
-# Commit the database in the private submodule repo.
+# Commit the database and media library in the private submodule repo.
 cd data
-git add .ht.sqlite
+git add .ht.sqlite uploads/
 git diff --cached --quiet && echo "    No changes to save." && exit 0
 git commit -m "notes: $TIMESTAMP"
 git push

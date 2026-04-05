@@ -15,14 +15,20 @@ A Notion-like personal knowledge base running locally via [WordPress Playground]
 
 WordPress Playground runs WordPress entirely in a local Node.js process (via WebAssembly). No PHP installation, no database daemon, no web server configuration required.
 
-The SQLite database (`data/.ht.sqlite`) is mounted directly into the WordPress VFS at `/wordpress/wp-content/database`, so WP Playground reads and writes your notes there instead of its default cache location.
+Two directories are mounted from the private submodule into the WordPress VFS:
+
+| Host path | VFS path | Contents |
+|---|---|---|
+| `data/` | `/wordpress/wp-content/database` | SQLite database (`.ht.sqlite`) |
+| `data/uploads/` | `/wordpress/wp-content/uploads` | Media library |
 
 ## How public/private separation works
 
 ```
 scratch-wordpress/          ← this repo (public)
 └── data/                   ← git submodule → your-notes-data (private)
-    └── .ht.sqlite          ← SQLite database with all your notes
+    ├── .ht.sqlite          ← SQLite database with all your notes
+    └── uploads/            ← media library
 ```
 
 The public repo contains only infrastructure (scripts, blueprint, config). The `data/` submodule records a single commit hash pointing into your private repo — no note content is ever stored in the public repo.
@@ -90,7 +96,7 @@ cd scratch-wordpress
 | `setup` | Install Node.js dependencies; init data submodule if configured |
 | `start` | Start WordPress Playground, mounting `./data` as the database |
 | `reset` | Wipe WP Playground's cached state and rebuild from `blueprint.json` |
-| `save` | Commit `data/.ht.sqlite` to the private repo; update submodule pointer |
+| `save` | Commit database and media library to the private repo; update submodule pointer |
 | `init-data <url>` | One-time: link a private repo as the `./data` submodule |
 
 npm shortcuts: `npm run setup`, `npm start`, `npm run reset`, `npm run save`.
@@ -111,7 +117,7 @@ Edit this file then run `./script/reset` to apply changes. Note that `reset` wip
 ```
 .
 ├── blueprint.json          # WordPress Playground configuration
-├── data/                   # Private submodule — contains .ht.sqlite
+├── data/                   # Private submodule — database + media library
 ├── package.json
 ├── script/
 │   ├── init-data           # One-time submodule setup
