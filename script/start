@@ -30,6 +30,13 @@ if [ -n "$(ls -A data/uploads 2>/dev/null | grep -v '\.gitkeep')" ]; then
   echo "==> Restored uploads from ./data/uploads"
 fi
 
+BLUEPRINT="$(mktemp /tmp/blueprint-XXXXXX.json)"
+trap 'rm -f "$BLUEPRINT"' EXIT
+node script/merge-blueprints > "$BLUEPRINT"
+if [ -f blueprint-local.json ]; then
+  echo "==> Merged blueprint.json + blueprint-local.json"
+fi
+
 echo "==> Starting WordPress Playground..."
 echo "    Admin URL: http://127.0.0.1:9400/wp-admin"
 echo "    Credentials: admin / password"
@@ -51,7 +58,7 @@ for theme_dir in data/themes/*/; do
 done
 
 exec ./node_modules/.bin/wp-playground-cli start \
-  --blueprint=blueprint.json \
+  --blueprint="$BLUEPRINT" \
   --port=9400 \
   --login \
   "${MOUNT_ARGS[@]}"
