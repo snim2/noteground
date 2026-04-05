@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # script/init-data
-# Wire up a private Git repo as the data submodule for note storage.
+# Clone a private Git repo as ./data/ for note storage.
 # Usage: ./script/init-data <private-repo-url>
 set -euo pipefail
 
@@ -16,19 +16,12 @@ fi
 
 REPO_URL="$1"
 
-if [ -f .gitmodules ] && grep -q 'path = data' .gitmodules; then
-  echo "Error: data submodule is already configured. Check .gitmodules."
+if [ -d data/.git ]; then
+  echo "Error: ./data/ is already a git repository."
   exit 1
 fi
 
-echo "==> Adding private data repo as submodule at ./data ..."
-
-# Clean up any leftover state from a previously failed run.
-rm -rf data .git/modules/data
-git rm -rf --cached data 2>/dev/null || true
-
-# git submodule add requires the remote to have at least one commit.
-# If the repo is empty, seed it with an initial commit before proceeding.
+# If the repo is empty, seed it with an initial commit before cloning.
 TMPDIR_SEED="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR_SEED"' EXIT
 
@@ -39,12 +32,9 @@ if [ -z "$(git -C "$TMPDIR_SEED/seed" log --oneline 2>/dev/null)" ]; then
   git -C "$TMPDIR_SEED/seed" push
 fi
 
-git submodule add "$REPO_URL" data
-
-echo ""
-echo "==> Submodule added. Committing .gitmodules to the public repo..."
-git add .gitmodules data
-git commit -m "Add private data submodule for note storage"
+echo "==> Cloning private data repo into ./data ..."
+rm -rf data
+git clone "$REPO_URL" data
 
 echo ""
 echo "==> Done. Your notes will be stored in: $REPO_URL"

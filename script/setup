@@ -10,12 +10,10 @@ npm install
 
 echo ""
 
-# Initialise the data submodule if it has been configured but not yet cloned.
-if [ -f .gitmodules ] && grep -q 'path = data' .gitmodules; then
-  echo "==> Initialising data submodule..."
-  git submodule update --init --recursive data
+if [ -d data/.git ]; then
+  echo "    ./data/ is already set up."
 else
-  echo "    No data submodule configured."
+  echo "    No data repo found at ./data/"
   echo "    Run ./script/init-data <private-repo-url> to set one up."
 fi
 

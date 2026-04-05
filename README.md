@@ -1,6 +1,6 @@
 # Personal Notes — WordPress Playground
 
-A Notion-like personal knowledge base running locally via [WordPress Playground](https://wordpress.github.io/wordpress-playground/). The infrastructure is public; your notes are stored in a separate **private** Git repository linked as a submodule.
+A Notion-like personal knowledge base running locally via [WordPress Playground](https://wordpress.github.io/wordpress-playground/). The infrastructure is public; your notes are stored in a separate **private** Git repository that you clone locally as `./data/`.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ A Notion-like personal knowledge base running locally via [WordPress Playground]
 | Code blocks | Code Syntax Block plugin |
 | Tables | TablePress plugin |
 | Theme | Twenty Twenty-Five |
-| Note storage | Private Git repo (submodule at `./data/`) |
+| Note storage | Private Git repo cloned at `./data/` |
 
 WordPress Playground runs WordPress entirely in a local Node.js process (via WebAssembly). No PHP installation, no database daemon, no web server configuration required.
 
@@ -27,13 +27,12 @@ WP Playground caches the site at a deterministic path derived from the project d
 
 ```
 scratch-wordpress/          ← this repo (public)
-└── data/                   ← git submodule → your-notes-data (private)
-    ├── database/
-    │   └── .ht.sqlite      ← SQLite database with all your notes
+└── data/                   ← your private repo, cloned here (gitignored)
+    ├── .ht.sqlite          ← SQLite database with all your notes
     └── uploads/            ← media library
 ```
 
-The public repo contains only infrastructure (scripts, blueprint, config). The `data/` submodule records a single commit hash pointing into your private repo — no note content is ever stored in the public repo.
+The public repo contains only infrastructure (scripts, blueprint, config). The `data/` directory is gitignored — no note content is ever stored in the public repo. Each user brings their own private repo.
 
 ## Prerequisites
 
@@ -42,7 +41,7 @@ The public repo contains only infrastructure (scripts, blueprint, config). The `
 
 ## First-time setup
 
-### 1. Install dependencies
+### 1. Clone this repo and install dependencies
 
 ```bash
 git clone <this-repo-url>
@@ -50,15 +49,19 @@ cd scratch-wordpress
 ./script/setup
 ```
 
-### 2. Create a private notes repo and link it
+### 2. Create a private notes repo and clone it as `./data/`
 
-Create a new **private** repository (e.g. `notes-data`) on GitHub or any Git host, then:
+Create a new **private** repository (e.g. `notes-data`) on GitHub or any Git host, then clone it into the `data/` directory:
+
+```bash
+git clone git@github.com:you/notes-data.git data
+```
+
+Or use the helper script which does this and sets up the initial structure:
 
 ```bash
 ./script/init-data git@github.com:you/notes-data.git
 ```
-
-This adds `data/` as a submodule and commits `.gitmodules` to the public repo.
 
 ### 3. Start and write notes
 
@@ -76,18 +79,13 @@ After a writing session, commit the database to your private repo:
 ./script/save
 ```
 
-Then push the public repo to record the updated submodule pointer:
-
-```bash
-git push
-```
-
 ## Restoring notes on a new machine
 
 ```bash
 git clone <this-repo-url>
 cd scratch-wordpress
-./script/setup        # clones the data submodule automatically
+./script/setup
+git clone git@github.com:you/notes-data.git data
 ./script/start
 ```
 
@@ -95,11 +93,11 @@ cd scratch-wordpress
 
 | Script | Purpose |
 |---|---|
-| `setup` | Install Node.js dependencies; init data submodule if configured |
+| `setup` | Install Node.js dependencies |
 | `start` | Start WordPress Playground, mounting `./data` as the database |
 | `reset` | Wipe WP Playground's cached state and rebuild from `blueprint.json` |
-| `save` | Commit database and media library to the private repo; update submodule pointer |
-| `init-data <url>` | One-time: link a private repo as the `./data` submodule |
+| `save` | Commit database and media library to the private repo |
+| `init-data <url>` | One-time: clone a private repo as `./data/` |
 
 npm shortcuts: `npm run setup`, `npm start`, `npm run reset`, `npm run save`.
 
@@ -112,17 +110,17 @@ npm shortcuts: `npm run setup`, `npm start`, `npm run reset`, `npm run save`.
 - Theme (Twenty Twenty-Five)
 - Site title and description
 
-Edit this file then run `./script/reset` to apply changes. Note that `reset` wipes and rebuilds from the blueprint, but your notes are safe because the database lives in `./data/` (the private submodule), not in WP Playground's cache.
+Edit this file then run `./script/reset` to apply changes. Note that `reset` wipes and rebuilds from the blueprint, but your notes are safe because the database lives in `./data/` (your private repo), not in WP Playground's cache.
 
 ## File layout
 
 ```
 .
 ├── blueprint.json          # WordPress Playground configuration
-├── data/                   # Private submodule — database + media library
+├── data/                   # Your private repo — database + media library (gitignored)
 ├── package.json
 ├── script/
-│   ├── init-data           # One-time submodule setup
+│   ├── init-data           # One-time: clone private repo as ./data/
 │   ├── reset               # Wipe and rebuild WP Playground site
 │   ├── save                # Commit and push the database
 │   ├── setup               # Install dependencies
