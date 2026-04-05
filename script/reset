@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# script/reset
+# Wipe the stored Playground site and start fresh from the blueprint.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ ! -d node_modules ]; then
+  echo "==> Dependencies not installed. Running setup first..."
+  ./script/setup
+fi
+
+echo "==> Resetting WordPress Playground (all site data will be deleted)..."
+echo "    Press Ctrl+C within 5 seconds to cancel."
+sleep 5
+
+exec ./node_modules/.bin/wp-playground-cli start \
+  --blueprint=blueprint.json \
+  --port=9400 \
+  --login \
+  --reset

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# script/start
+# Start the local WordPress Playground development server.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if [ ! -d node_modules ]; then
+  echo "==> Dependencies not installed. Running setup first..."
+  ./script/setup
+fi
+
+echo "==> Starting WordPress Playground..."
+echo "    Admin URL: http://127.0.0.1:9400/wp-admin"
+echo "    Credentials: admin / password"
+echo "    Press Ctrl+C to stop."
+echo ""
+
+exec ./node_modules/.bin/wp-playground-cli start \
+  --blueprint=blueprint.json \
+  --port=9400 \
+  --login

@@ -1,0 +1,14 @@
+{
+  "name": "scratch-wordpress",
+  "version": "1.0.0",
+  "description": "Personal notes site powered by WordPress Playground",
+  "scripts": {
+    "start": "./script/start",
+    "setup": "./script/setup",
+    "reset": "./script/reset"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@wp-playground/cli": "^3.1.15"
+  }
+}

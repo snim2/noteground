@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# script/setup
+# Install all dependencies needed to run this project.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+echo "==> Installing Node.js dependencies..."
+npm install
+
+echo ""
+echo "==> Setup complete. Run ./script/start to launch WordPress."
