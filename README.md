@@ -1,10 +1,10 @@
-# Personal Notes — WordPress Playground
+# Noteground - personal notes running locally on WordPress Playground
 
-A Notion-like personal knowledge base running locally via [WordPress Playground](https://wordpress.github.io/wordpress-playground/). No PHP installation, no database daemon, no web server configuration required — WordPress runs entirely in your browser.
+A personal knowledge base running locally via [WordPress Playground](https://wordpress.github.io/wordpress-playground/). No PHP installation, no database daemon, no web server configuration required — WordPress runs entirely in your browser.
 
-This repo is public, but your notes live in a separate **private** Git repository that you clone locally as `./data/`.
+This repo is public, but your notes live in a separate **private** Git repository that you clone locally via the scripts provided.
 
-Note that there is [a proposal](https://adamadam.blog/2025/01/08/wordpress-as-a-git-repo/) from Adam Zieliński to make it possible for WordPress Playground to have content stored as Markdown files.
+Note that there is  [a proposal](https://adamadam.blog/2025/01/08/wordpress-as-a-git-repo/) from Adam Zieliński to make it possible for WordPress Playground to have content stored as Markdown files.
 You can [follow the discussion on GitHub](https://github.com/WordPress/wordpress-playground/discussions/1524) about this, but it is not yet officially supported.
 
 ## Quickstart
@@ -17,8 +17,8 @@ You can [follow the discussion on GitHub](https://github.com/WordPress/wordpress
 ### Clone this repo and install dependencies
 
 ```bash
-git clone <this-repo-url>
-cd scratch-wordpress
+git clone git@github.com:snim2/noteground.git
+cd noteground
 ./script/setup
 ```
 
@@ -51,8 +51,8 @@ This commits the database and media library to your private repo and pushes.
 ## Restoring notes on a new machine
 
 ```bash
-git clone <this-repo-url>
-cd scratch-wordpress
+git clone git@github.com:snim2/noteground.git
+cd noteground
 ./script/setup
 git clone git@github.com:you/notes-data.git data
 ./script/start
@@ -114,7 +114,7 @@ Create a gitignored `blueprint-local.json` to customise your local setup without
 ## How privacy works
 
 ```plaintext
-scratch-wordpress/          ← this repo (public)
+noteground/                 ← this repo (public)
 └── data/                   ← your private repo, cloned here (gitignored)
     ├── database/
     │   └── .ht.sqlite      ← SQLite database with all your notes
