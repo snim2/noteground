@@ -1,10 +1,23 @@
 {
   "$schema": "https://playground.wordpress.net/blueprint-schema.json",
   "preferredVersions": {
-    "php": "8.3",
-    "wp": "beta"
+    "php": "8.4",
+    "wp": "latest"
+  },
+  "meta": {
+    "title": "Personal notes",
+    "description": "Use WordPress as a personal notes store - a local-only app with site data saved to a Git repository.",
+    "author": "snim2",
+    "categories": [
+      "Notes",
+      "Productivity"
+    ]
   },
   "login": true,
+  "plugins": [
+    "code-syntax-block"
+  ],
+  "landingPage": "/",
   "steps": [
     {
       "step": "setSiteOptions",
@@ -16,18 +29,11 @@
       }
     },
     {
-      "step": "installPlugin",
-      "pluginData": {
-        "resource": "wordpress.org/plugins",
-        "slug": "code-syntax-block"
-      }
-    },
-    {
-      "step": "installTheme",
-      "themeData": {
-        "resource": "wordpress.org/themes",
-        "slug": "twentytwentyfive"
-      }
+      "step": "updateUserMeta",
+      "meta": {
+        "admin_color": "modern"
+      },
+      "userId": 1
     }
   ]
 }
