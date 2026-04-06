@@ -205,14 +205,22 @@ Example — switch to PHP 8.2 and install an extra plugin:
 .
 ├── blueprint.json          # WordPress Playground configuration (shared)
 ├── blueprint-local.json    # Per-user overrides — gitignored, optional
-├── data/                   # Your private repo — database, media, custom plugins/themes (gitignored)
+├── data-*/                 # Your private repo(s)q — database, media, custom plugins/themes (gitignored)
 ├── package.json
+├── schemas/
+│   └── blueprint.json      # JSON schema for blueprint files
 ├── script/
+|   |── lib/
+│   |   └── profile         # Resolve site profile when running multiple Playgrounds
+│   ├── bootstrap           # Install all dependencies
+│   ├── bootstrap           # Install all dependencies
 │   ├── init-data           # One-time: clone private repo as ./data/
 │   ├── merge-blueprints    # Merge blueprint.json + blueprint-local.json
 │   ├── reset               # Wipe and rebuild WP Playground site
-│   ├── save                # Commit and push the database
-│   ├── setup               # Install dependencies
+│   ├── save                # Commit and push the database and other site data
+│   ├── setup               # Install dependencies and other one-time setup actions
 │   └── start               # Start dev server
+│   └── stop                # Stop all running Playground instances
+│   └── test                # Run linters and tests
 └── README.md
 ```
