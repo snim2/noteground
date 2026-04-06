@@ -14,9 +14,8 @@ Until then, this repo is a kludge to create a repeatable Playground environment 
 | Runtime | WordPress Playground CLI (`@wp-playground/cli`) |
 | Editor | WordPress block editor (Gutenberg) |
 | Code blocks | Code Syntax Block plugin |
-| Tables | TablePress plugin |
 | Theme | Twenty Twenty-Five |
-| Note storage | Private Git repo cloned at `./data/` |
+| Note storage | Private Git repo(s) cloned at `./data-*/` |
 
 WordPress Playground runs WordPress entirely in a local Node.js process (via WebAssembly). No PHP installation, no database daemon, no web server configuration required.
 
