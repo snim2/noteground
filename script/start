@@ -51,6 +51,8 @@ trap 'rm -f "$_BPTMP" "$BLUEPRINT"' EXIT
 node script/merge-blueprints > "$BLUEPRINT"
 if [ -f blueprint-local.json ]; then
   echo "==> Merged blueprint.json + blueprint-local.json"
+  echo "==> Validating merged blueprint JSON against schema..."
+  check-jsonschema --schemafile schemas/blueprint.json "$BLUEPRINT"
 fi
 
 echo "==> Starting WordPress Playground..."
