@@ -5,8 +5,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-echo "==> Installing Node.js dependencies..."
-npm install
+./script/bootstrap
 
 echo ""
 

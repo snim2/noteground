@@ -103,7 +103,8 @@ git clone git@github.com:you/notes-data.git data
 
 | Script | Purpose |
 |---|---|
-| `setup` | Install Node.js dependencies |
+| `bootstrap` | Install all dependencies |
+| `setup` | Set up dependencies and other quickstart actions |
 | `start` | Start WordPress Playground, mounting `./data` as the database |
 | `stop` | Stop all running WordPress Playground instances |
 | `reset` | Wipe WP Playground's cached state and rebuild from `blueprint.json` |
