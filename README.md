@@ -33,11 +33,16 @@ WP Playground caches the site at a deterministic path derived from the project d
 ```
 scratch-wordpress/          ← this repo (public)
 └── data/                   ← your private repo, cloned here (gitignored)
-    ├── .ht.sqlite          ← SQLite database with all your notes
-    └── uploads/            ← media library
+    ├── database/
+    │   └── .ht.sqlite      ← SQLite database with all your notes
+    ├── uploads/            ← media library
+    ├── plugins/            ← custom plugins (each subdirectory is one plugin)
+    └── themes/             ← custom themes (each subdirectory is one theme)
 ```
 
 The public repo contains only infrastructure (scripts, blueprint, config). The `data/` directory is gitignored — no note content is ever stored in the public repo. Each user brings their own private repo.
+
+Custom plugins and themes placed in `data/plugins/` and `data/themes/` are mounted individually into the WP Playground instance at startup, leaving the shared plugins installed via `blueprint.json` untouched.
 
 ## Prerequisites
 
