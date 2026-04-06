@@ -109,6 +109,7 @@ git clone git@github.com:you/notes-data.git data
 | `stop` | Stop all running WordPress Playground instances |
 | `reset` | Wipe WP Playground's cached state and rebuild from `blueprint.json` |
 | `save` | Commit database and media library to the private repo |
+| `test` | Run any available lints and tests |
 | `init-data <url>` | One-time: clone a private repo as `./data/` |
 
 npm shortcuts: `npm run setup`, `npm start`, `npm run reset`, `npm run save`.

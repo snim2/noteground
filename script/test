@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# script/test: Run lints and tests.
+
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+echo "==> Linting all shell scripts..."
+for file in script/*; do
+  [[ -f "$file" ]] || continue
+
+  shebang=$(head -n 1 "$file")
+
+  if [[ "$shebang" != *node* ]]; then
+    shellcheck "$file"
+  fi
+done
