@@ -151,21 +151,6 @@ All `data*` directories are gitignored. No note content ever touches this public
 
 Each `data-*` directory is an independent git repo you own and control, stored wherever you choose to host it.
 
-## Scripts
-
-| Script | Purpose |
-|---|---|
-| `bootstrap` | Install all dependencies |
-| `setup` | Set up dependencies and other quickstart actions |
-| `start` | Start WordPress Playground, mounting `./data` as the database |
-| `stop` | Stop all running WordPress Playground instances |
-| `reset` | Wipe WP Playground's cached state and rebuild from `blueprint.json` |
-| `save` | Commit database and media library to the private repo |
-| `test` | Run any available lints and tests |
-| `init-data <url>` | One-time: clone a private repo as `./data/` |
-
-npm shortcuts: `npm run setup`, `npm start`, `npm run reset`, `npm run save`.
-
 ## Configuration
 
 `blueprint.json` controls what WordPress installs on first boot (and after `reset`):
@@ -223,3 +208,6 @@ Example — switch to PHP 8.2 and install an extra plugin:
 │   └── test                # Run linters and tests
 └── README.md
 ```
+
+Note that `npm` has shortcuts to all user-run scripts, e.g. npm run setup`,
+`npm start`, `npm run reset`, `npm run save`, etc.
