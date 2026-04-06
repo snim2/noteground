@@ -112,15 +112,38 @@ npm shortcuts: `npm run setup`, `npm start`, `npm run reset`, `npm run save`.
 
 Edit this file then run `./script/reset` to apply changes. Note that `reset` wipes and rebuilds from the blueprint, but your notes are safe because the database lives in `./data/` (your private repo), not in WP Playground's cache.
 
+### Per-user overrides
+
+Create a `blueprint-local.json` in the project root to customise your local setup without affecting other users. This file is gitignored. At startup, `script/start` merges it with `blueprint.json`:
+
+- Top-level keys in `blueprint-local.json` override the base (e.g. change PHP version)
+- Steps in `blueprint-local.json` are appended after the base steps
+
+Example — switch to PHP 8.2 and install an extra plugin:
+
+```json
+{
+  "preferredVersions": { "php": "8.2" },
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": { "resource": "wordpress.org/plugins", "slug": "classic-editor" }
+    }
+  ]
+}
+```
+
 ## File layout
 
 ```
 .
-├── blueprint.json          # WordPress Playground configuration
-├── data/                   # Your private repo — database + media library (gitignored)
+├── blueprint.json          # WordPress Playground configuration (shared)
+├── blueprint-local.json    # Per-user overrides — gitignored, optional
+├── data/                   # Your private repo — database, media, custom plugins/themes (gitignored)
 ├── package.json
 ├── script/
 │   ├── init-data           # One-time: clone private repo as ./data/
+│   ├── merge-blueprints    # Merge blueprint.json + blueprint-local.json
 │   ├── reset               # Wipe and rebuild WP Playground site
 │   ├── save                # Commit and push the database
 │   ├── setup               # Install dependencies
