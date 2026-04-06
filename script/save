@@ -6,13 +6,19 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-if [ ! -d data/.git ]; then
-  echo "Error: ./data/ is not a git repository."
-  echo "Run ./script/init-data <private-repo-url> first."
+# shellcheck source=/dev/null
+source "$(dirname "$0")/lib/profile"
+
+if [ ! -d "$DATA_DIR/.git" ]; then
+  echo "Error: ./$DATA_DIR/ is not a git repository."
+  if [ "$PROFILE_LABEL" = "default" ]; then
+    echo "Run ./script/init-data <private-repo-url> first."
+  else
+    echo "Run NOTES_PROFILE=$PROFILE_LABEL ./script/init-data <private-repo-url> first."
+  fi
   exit 1
 fi
 
-SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$(pwd)" | shasum -a 256 | cut -d' ' -f1)"
 DB_FILE="$SITE_DIR/wp-content/database/.ht.sqlite"
 UPLOADS_DIR="$SITE_DIR/wp-content/uploads"
 
@@ -22,18 +28,18 @@ if [ ! -f "$DB_FILE" ]; then
   exit 1
 fi
 
-mkdir -p data/database data/uploads
+mkdir -p "$DATA_DIR/database" "$DATA_DIR/uploads"
 
 echo "==> Copying database and uploads from site cache..."
-cp "$DB_FILE" data/database/.ht.sqlite
+cp "$DB_FILE" "$DATA_DIR/database/.ht.sqlite"
 if [ -d "$UPLOADS_DIR" ] && [ -n "$(ls -A "$UPLOADS_DIR")" ]; then
-  cp -r "$UPLOADS_DIR/." data/uploads/
+  cp -r "$UPLOADS_DIR/." "$DATA_DIR/uploads/"
 fi
 
 TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 echo "==> Saving snapshot: $TIMESTAMP"
 
-cd data
+cd "$DATA_DIR"
 git add database/ uploads/
 git diff --cached --quiet && echo "    No changes to save." && exit 0
 git commit -m "notes: $TIMESTAMP"

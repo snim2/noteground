@@ -11,9 +11,11 @@ if [ ! -d node_modules ]; then
   ./script/setup
 fi
 
-SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$(pwd)" | shasum -a 256 | cut -d' ' -f1)"
+# shellcheck source=/dev/null
+source "$(dirname "$0")/lib/profile"
 
-echo "==> Resetting WordPress Playground (site cache will be deleted; ./data is untouched)."
+echo "==> Resetting WordPress Playground (site cache will be deleted; ./$DATA_DIR is untouched)."
+[ "$PROFILE_LABEL" = "default" ] || echo "    Profile: $PROFILE_LABEL"
 echo "    Press Ctrl+C within 5 seconds to cancel."
 sleep 5
 
@@ -24,7 +26,9 @@ BLUEPRINT="${_BPTMP}.json"
 trap 'rm -f "$_BPTMP" "$BLUEPRINT"' EXIT
 node script/merge-blueprints > "$BLUEPRINT"
 
+PORT="$(_find_free_port 9400)"
+
 exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint="$BLUEPRINT" \
-  --port=9400 \
+  --port="$PORT" \
   --login

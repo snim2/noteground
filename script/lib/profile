@@ -1,0 +1,38 @@
+# script/lib/profile
+# shellcheck shell=bash
+# shellcheck disable=SC2034
+# Shared profile resolution. Source this file — do not execute it directly.
+#
+# Reads:  NOTES_PROFILE (env var, optional — empty means the default profile)
+# Sets:   DATA_DIR, SITE_DIR, PROFILE_LABEL
+# Defines: _find_free_port()
+#
+# All scripts must `cd` to the project root before sourcing this file.
+
+NOTES_PROFILE="${NOTES_PROFILE:-}"
+
+if [ -z "$NOTES_PROFILE" ]; then
+  DATA_DIR="data"
+  PROFILE_LABEL="default"
+  _SITE_KEY="$(pwd)"
+else
+  if [[ ! "$NOTES_PROFILE" =~ ^[a-zA-Z0-9][a-zA-Z0-9-]*$ ]]; then
+    echo "Error: NOTES_PROFILE must contain only letters, numbers, and hyphens (e.g. 'work', 'research-2')." >&2
+    exit 1
+  fi
+  DATA_DIR="data-${NOTES_PROFILE}"
+  PROFILE_LABEL="$NOTES_PROFILE"
+  _SITE_KEY="$(pwd)/${NOTES_PROFILE}"
+fi
+
+SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$_SITE_KEY" | shasum -a 256 | cut -d' ' -f1)"
+unset _SITE_KEY
+
+# Find the first free TCP port at or above the given starting port.
+_find_free_port() {
+  local port="${1:-9400}"
+  while nc -z 127.0.0.1 "$port" 2>/dev/null; do
+    port=$((port + 1))
+  done
+  printf '%s' "$port"
+}

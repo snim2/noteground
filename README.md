@@ -99,6 +99,59 @@ git clone git@github.com:you/notes-data.git data
 ./script/start
 ```
 
+## Running multiple notebooks simultaneously
+
+You can run as many independent WordPress instances as you like from a single checkout using the `NOTES_PROFILE` environment variable. Each profile gets its own:
+
+- **Data directory** — `./data-<profile>/` (gitignored, backed by its own private repo)
+- **WP Playground site cache** — isolated from every other profile (hash input includes the profile name)
+- **Port** — the start script finds the first free port from 9400 upward, so two instances never conflict
+
+No git worktrees, no extra clones, no manual port juggling.
+
+### Set up a named profile
+
+```bash
+# 1. Create a private repo for this notebook (e.g. on GitHub), then:
+NOTES_PROFILE=work ./script/init-data git@github.com:you/notes-work.git
+
+# 2. Start it
+NOTES_PROFILE=work ./script/start
+
+# 3. Save after a session
+NOTES_PROFILE=work ./script/save
+```
+
+Run the same commands in another terminal with a different profile name to have both notebooks open at once:
+
+```bash
+NOTES_PROFILE=research ./script/start
+```
+
+Profile names must contain only letters, numbers, and hyphens (e.g. `work`, `research-2`).
+
+### Privacy model
+
+Each profile is completely isolated:
+
+- `./data/` — default profile (your existing private repo, unchanged)
+- `./data-work/` — `work` profile (separate private repo, separate git history)
+- `./data-research/` — `research` profile (and so on)
+
+All `data*` directories are gitignored. No note content ever touches this public repo, regardless of how many profiles you create.
+
+### File layout with multiple profiles
+
+```
+.
+├── data/               ← default profile (your original private repo)
+├── data-work/          ← work profile private repo
+├── data-research/      ← research profile private repo
+└── ...
+```
+
+Each `data-*` directory is an independent git repo you own and control, stored wherever you choose to host it.
+
 ## Scripts
 
 | Script | Purpose |

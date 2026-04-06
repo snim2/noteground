@@ -6,8 +6,15 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# shellcheck source=/dev/null
+source "$(dirname "$0")/lib/profile"
+
 if [ $# -ne 1 ]; then
-  echo "Usage: ./script/init-data <private-repo-url>"
+  if [ "$PROFILE_LABEL" = "default" ]; then
+    echo "Usage: ./script/init-data <private-repo-url>"
+  else
+    echo "Usage: NOTES_PROFILE=$PROFILE_LABEL ./script/init-data <private-repo-url>"
+  fi
   echo ""
   echo "Create a new private repository (e.g. on GitHub), then pass its URL here."
   echo "Example: ./script/init-data git@github.com:you/notes-data.git"
@@ -16,8 +23,8 @@ fi
 
 REPO_URL="$1"
 
-if [ -d data/.git ]; then
-  echo "Error: ./data/ is already a git repository."
+if [ -d "$DATA_DIR/.git" ]; then
+  echo "Error: ./$DATA_DIR/ is already a git repository."
   exit 1
 fi
 
@@ -32,11 +39,16 @@ if [ -z "$(git -C "$TMPDIR_SEED/seed" log --oneline 2>/dev/null)" ]; then
   git -C "$TMPDIR_SEED/seed" push
 fi
 
-echo "==> Cloning private data repo into ./data ..."
-rm -rf data
-git clone "$REPO_URL" data
+echo "==> Cloning private data repo into ./$DATA_DIR ..."
+rm -rf "$DATA_DIR"
+git clone "$REPO_URL" "$DATA_DIR"
 
 echo ""
 echo "==> Done. Your notes will be stored in: $REPO_URL"
-echo "    Run ./script/start to launch WordPress."
-echo "    Run ./script/save to commit and push your notes after a session."
+if [ "$PROFILE_LABEL" = "default" ]; then
+  echo "    Run ./script/start to launch WordPress."
+  echo "    Run ./script/save to commit and push your notes after a session."
+else
+  echo "    Run NOTES_PROFILE=$PROFILE_LABEL ./script/start to launch WordPress."
+  echo "    Run NOTES_PROFILE=$PROFILE_LABEL ./script/save to commit and push your notes after a session."
+fi

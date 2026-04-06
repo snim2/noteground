@@ -11,22 +11,24 @@ if [ ! -d node_modules ]; then
   ./script/setup
 fi
 
-mkdir -p data/database data/uploads data/plugins data/themes
+# shellcheck source=/dev/null
+source "$(dirname "$0")/lib/profile"
 
-# WP Playground stores site files at a path derived from the project directory.
-# The hash is SHA-256 of the absolute project path (no trailing newline).
-SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$(pwd)" | shasum -a 256 | cut -d' ' -f1)"
+mkdir -p "$DATA_DIR/database" "$DATA_DIR/uploads" "$DATA_DIR/plugins" "$DATA_DIR/themes"
+
 DB_DIR="$SITE_DIR/wp-content/database"
 UPLOADS_DIR="$SITE_DIR/wp-content/uploads"
+
+[ "$PROFILE_LABEL" = "default" ] || echo "==> Profile: $PROFILE_LABEL (data dir: ./$DATA_DIR)"
 
 # Only restore saved data if the site is already fully initialized.
 # Seeding into a partial site directory causes WP Playground to fail during blueprint execution.
 if [ -f "$SITE_DIR/wp-config.php" ]; then
-  if [ -f data/database/.ht.sqlite ]; then
-    cp data/database/.ht.sqlite "$DB_DIR/.ht.sqlite"
-    echo "==> Restored database from ./data/database"
+  if [ -f "$DATA_DIR/database/.ht.sqlite" ]; then
+    cp "$DATA_DIR/database/.ht.sqlite" "$DB_DIR/.ht.sqlite"
+    echo "==> Restored database from ./$DATA_DIR/database"
   fi
-  UPLOAD_FILES=(data/uploads/*)
+  UPLOAD_FILES=("$DATA_DIR/uploads/"*)
   HAS_REAL_UPLOADS=false
   for f in "${UPLOAD_FILES[@]}"; do
     [[ "$(basename "$f")" == ".gitkeep" ]] && continue
@@ -35,12 +37,12 @@ if [ -f "$SITE_DIR/wp-config.php" ]; then
   done
   if $HAS_REAL_UPLOADS; then
     mkdir -p "$UPLOADS_DIR"
-    cp -r data/uploads/. "$UPLOADS_DIR/"
-    echo "==> Restored uploads from ./data/uploads"
+    cp -r "$DATA_DIR/uploads/." "$UPLOADS_DIR/"
+    echo "==> Restored uploads from ./$DATA_DIR/uploads"
   fi
 else
   echo "    Site not yet initialized — starting fresh."
-  if [ -f data/database/.ht.sqlite ]; then
+  if [ -f "$DATA_DIR/database/.ht.sqlite" ]; then
     echo "    Your saved notes will be restored on the next start."
   fi
 fi
@@ -63,7 +65,7 @@ _on_interrupt() {
   read -r -p "==> Save site data before exit? [Y/n] " _answer
   case "$_answer" in
     [nN]*) ;;
-    *) ./script/save ;;
+    *) NOTES_PROFILE="$NOTES_PROFILE" ./script/save ;;
   esac
   _cleanup
   exit 0
@@ -78,20 +80,22 @@ if [ -f blueprint-local.json ]; then
   check-jsonschema --schemafile schemas/blueprint.json "$BLUEPRINT"
 fi
 
+PORT="$(_find_free_port 9400)"
+
 echo "==> Starting WordPress Playground..."
-echo "    Admin URL: http://127.0.0.1:9400/wp-admin"
+echo "    Admin URL: http://127.0.0.1:$PORT/wp-admin"
 echo "    Credentials: admin / password"
 echo "    Press Ctrl+C to stop."
 echo ""
 
 MOUNT_ARGS=()
-for plugin_dir in data/plugins/*/; do
+for plugin_dir in "$DATA_DIR/plugins/"/*/; do
   [ -d "$plugin_dir" ] || continue
   name="$(basename "$plugin_dir")"
   MOUNT_ARGS+=(--mount "$(pwd)/$plugin_dir:/wordpress/wp-content/plugins/$name")
   echo "==> Mounting custom plugin: $name"
 done
-for theme_dir in data/themes/*/; do
+for theme_dir in "$DATA_DIR/themes/"/*/; do
   [ -d "$theme_dir" ] || continue
   name="$(basename "$theme_dir")"
   MOUNT_ARGS+=(--mount "$(pwd)/$theme_dir:/wordpress/wp-content/themes/$name")
@@ -100,7 +104,7 @@ done
 
 ./node_modules/.bin/wp-playground-cli start \
   --blueprint="$BLUEPRINT" \
-  --port=9400 \
+  --port="$PORT" \
   --login \
   "${MOUNT_ARGS[@]}" &
 _playground_pid=$!

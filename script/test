@@ -6,7 +6,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 echo "==> Linting all shell scripts..."
-for file in script/*; do
+for file in script/* script/lib/*; do
   [[ -f "$file" ]] || continue
 
   shebang=$(head -n 1 "$file")
