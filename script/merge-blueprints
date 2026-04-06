@@ -9,7 +9,8 @@ const path = require('path');
 
 const root = path.join(__dirname, '..');
 const base = JSON.parse(fs.readFileSync(path.join(root, 'blueprint.json'), 'utf8'));
-const localPath = path.join(root, 'blueprint-local.json');
+// Accept an explicit path as the first argument, falling back to the project root.
+const localPath = process.argv[2] || path.join(root, 'blueprint-local.json');
 
 if (!fs.existsSync(localPath)) {
   process.stdout.write(JSON.stringify(base, null, 2));

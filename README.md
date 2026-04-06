@@ -81,9 +81,9 @@ Each profile stores data in its own gitignored directory (`./data-work/`, `./dat
 
 `blueprint.json` controls what WordPress installs on first boot (plugins, theme, PHP version, site title). Edit it then run `./script/reset` to rebuild. Your notes are safe — the database lives in `./data/`, not in WP Playground's cache.
 
-### Per-user overrides
+### Per-profile overrides
 
-Create a gitignored `blueprint-local.json` to customise your local setup without affecting others. Top-level keys override the base; steps are appended.
+Create a `blueprint-local.json` inside a profile's data directory (`./data/blueprint-local.json`, `./data-work/blueprint-local.json`, etc.) to customise that profile's local setup without affecting others. Top-level keys override the base; `plugins` and `steps` arrays are concatenated.
 
 ```json
 {
@@ -96,6 +96,8 @@ Create a gitignored `blueprint-local.json` to customise your local setup without
   ]
 }
 ```
+
+The file is kept with the private notes repo, so overrides are naturally scoped to that profile and never touch this public repo.
 
 ## Scripts
 
@@ -130,8 +132,8 @@ The public repo contains only infrastructure. The `data/` directory (and any `da
 ```plaintext
 .
 ├── blueprint.json           # WordPress Playground configuration (shared)
-├── blueprint-local.json     # Per-user overrides — gitignored, optional
 ├── data-*/                  # Your private repo(s) — gitignored
+│   └── blueprint-local.json # Per-profile overrides — optional, kept in private repo
 ├── package.json
 ├── schemas/
 │   └── blueprint.json       # JSON schema for blueprint files
