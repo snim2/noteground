@@ -18,16 +18,23 @@ SITE_DIR="$HOME/.wordpress-playground/sites/$(printf '%s' "$(pwd)" | shasum -a 2
 DB_DIR="$SITE_DIR/wp-content/database"
 UPLOADS_DIR="$SITE_DIR/wp-content/uploads"
 
-# Restore saved data into the site cache before starting.
-if [ -f data/database/.ht.sqlite ]; then
-  mkdir -p "$DB_DIR"
-  cp data/database/.ht.sqlite "$DB_DIR/.ht.sqlite"
-  echo "==> Restored database from ./data/database"
-fi
-if [ -n "$(ls -A data/uploads 2>/dev/null | grep -v '\.gitkeep')" ]; then
-  mkdir -p "$UPLOADS_DIR"
-  cp -r data/uploads/. "$UPLOADS_DIR/"
-  echo "==> Restored uploads from ./data/uploads"
+# Only restore saved data if the site is already fully initialized.
+# Seeding into a partial site directory causes WP Playground to fail during blueprint execution.
+if [ -f "$SITE_DIR/wp-config.php" ]; then
+  if [ -f data/database/.ht.sqlite ]; then
+    cp data/database/.ht.sqlite "$DB_DIR/.ht.sqlite"
+    echo "==> Restored database from ./data/database"
+  fi
+  if [ -n "$(ls -A data/uploads 2>/dev/null | grep -v '\.gitkeep')" ]; then
+    mkdir -p "$UPLOADS_DIR"
+    cp -r data/uploads/. "$UPLOADS_DIR/"
+    echo "==> Restored uploads from ./data/uploads"
+  fi
+else
+  echo "    Site not yet initialized — starting fresh."
+  if [ -f data/database/.ht.sqlite ]; then
+    echo "    Your saved notes will be restored on the next start."
+  fi
 fi
 
 _BPTMP="$(mktemp /tmp/blueprint-XXXXXX)"
@@ -61,5 +68,4 @@ done
 exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint="$BLUEPRINT" \
   --port=9400 \
-  --login \
   "${MOUNT_ARGS[@]}"
