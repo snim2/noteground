@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: npm
+
+      - name: Install check-jsonschema
+        run: pip install check-jsonschema
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Run tests
+        run: ./script/test
