@@ -4,6 +4,7 @@
   "description": "Personal notes site powered by WordPress Playground",
   "scripts": {
     "start": "./script/start",
+    "stop": "./script/stop",
     "setup": "./script/setup",
     "reset": "./script/reset",
     "save": "./script/save"
