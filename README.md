@@ -2,6 +2,11 @@
 
 A Notion-like personal knowledge base running locally via [WordPress Playground](https://wordpress.github.io/wordpress-playground/). The infrastructure is public; your notes are stored in a separate **private** Git repository that you clone locally as `./data/`.
 
+Currently, there is [a proposal](https://adamadam.blog/2025/01/08/wordpress-as-a-git-repo/) from Adam Zieliński to make it possible for WordPress Playground to have content stored as Git backed Markdown files.
+You can [follow the discussion on GitHub](https://github.com/WordPress/wordpress-playground/discussions/1524) about this, but it is not yet officially supported.
+
+Until then, this repo is a kludge to create a repeatable Playground environment which can be public, with content stored in a separate Git repository that can be private.
+
 ## Architecture
 
 | Layer | Technology |
