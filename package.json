@@ -12,6 +12,6 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "@wp-playground/cli": "^3.1.15"
+    "@wp-playground/cli": "^3.1.16"
   }
 }
