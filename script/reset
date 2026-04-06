@@ -26,4 +26,5 @@ node script/merge-blueprints > "$BLUEPRINT"
 
 exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint="$BLUEPRINT" \
-  --port=9400
+  --port=9400 \
+  --login

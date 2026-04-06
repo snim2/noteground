@@ -68,4 +68,5 @@ done
 exec ./node_modules/.bin/wp-playground-cli start \
   --blueprint="$BLUEPRINT" \
   --port=9400 \
+  --login \
   "${MOUNT_ARGS[@]}"
