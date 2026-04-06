@@ -129,15 +129,15 @@ The public repo contains only infrastructure. The `data/` directory (and any `da
 
 ```plaintext
 .
-├── blueprint.json          # WordPress Playground configuration (shared)
-├── blueprint-local.json    # Per-user overrides — gitignored, optional
-├── data-*/                 # Your private repo(s) — gitignored
+├── blueprint.json           # WordPress Playground configuration (shared)
+├── blueprint-local.json     # Per-user overrides — gitignored, optional
+├── data-*/                  # Your private repo(s) — gitignored
 ├── package.json
 ├── schemas/
-│   └── blueprint.json      # JSON schema for blueprint files
+│   └── blueprint.json       # JSON schema for blueprint files
 └── script/
     ├── lib/
-    │   └── profile         # Shared profile resolution for multi-notebook support
+    │   └── profile          # Shared profile resolution for multi-notebook support
     ├── bootstrap            # Install system dependencies (macOS/Homebrew)
     ├── init-data            # One-time: clone private repo as ./data/
     ├── merge-blueprints     # Merge blueprint.json + blueprint-local.json
