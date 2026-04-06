@@ -1,7 +1,7 @@
 {
-  "name": "scratch-wordpress",
+  "name": "noteground",
   "version": "1.0.0",
-  "description": "Personal notes site powered by WordPress Playground",
+  "description": "Personal notes powered by WordPress Playground",
   "scripts": {
     "start": "./script/start",
     "stop": "./script/stop",
