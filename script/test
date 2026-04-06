@@ -15,3 +15,6 @@ for file in script/*; do
     shellcheck "$file"
   fi
 done
+
+echo "==> Validating blueprint.json against schema..."
+check-jsonschema --schemafile schemas/blueprint.json blueprint.json
