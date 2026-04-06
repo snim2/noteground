@@ -12,7 +12,7 @@
 		"description": {
 		  "type": "string",
 		  "description": "Optional description. It doesn't do anything but is exposed as a courtesy to developers who may want to document which blueprint file does what.",
-		  "deprecated": "Use meta.description instead."
+		  "deprecated": true
 		},
 		"meta": {
 		  "type": "object",
@@ -148,7 +148,8 @@
 		  "description": "User to log in as. If true, logs the user in as admin/password."
 		},
 		"phpExtensionBundles": {
-		  "deprecated": "No longer used. Feel free to remove it from your Blueprint."
+			"deprecated": true,
+			"description": "No longer used. Feel free to remove it from your Blueprint."
 		},
 		"steps": {
 		  "type": "array",
@@ -687,7 +688,8 @@
 			},
 			"virtualize": {
 			  "type": "boolean",
-			  "deprecated": "This option is noop and will be removed in a future version.\nThis option is only kept in here to avoid breaking Blueprint schema validation\nfor existing apps using this option."
+			  "deprecated": true,
+			  "description": "This option is noop and will be removed in a future version.\nThis option is only kept in here to avoid breaking Blueprint schema validation\nfor existing apps using this option."
 			}
 		  },
 		  "required": [
@@ -900,7 +902,8 @@
 			},
 			"pluginZipFile": {
 			  "$ref": "#/definitions/FileReference",
-			  "deprecated": ". Use 'pluginData' instead."
+			  "deprecated": true,
+			  "description": ". Use 'pluginData' instead."
 			},
 			"options": {
 			  "$ref": "#/definitions/InstallPluginOptions",
@@ -954,8 +957,9 @@
 			  "description": "The theme files to install. It can be either a theme zip file, or a directory containing all the theme files at its root."
 			},
 			"themeZipFile": {
-			  "$ref": "#/definitions/FileReference",
-			  "deprecated": ". Use 'themeData' instead."
+				"$ref": "#/definitions/FileReference",
+				"deprecated": true,
+				"description": ". Use 'themeData' instead."
 			},
 			"options": {
 			  "$ref": "#/definitions/InstallThemeOptions",
@@ -993,7 +997,8 @@
 			},
 			"password": {
 			  "type": "string",
-			  "deprecated": "The password field is deprecated and will be removed in a future version.\nOnly the username field is required for user authentication."
+			  "deprecated": true,
+			  "description": "The password field is deprecated and will be removed in a future version.\nOnly the username field is required for user authentication."
 			}
 		  },
 		  "required": [
@@ -1383,7 +1388,7 @@
 			"zipPath": {
 			  "type": "string",
 			  "description": "The path of the zip file to extract",
-			  "deprecated": "Use zipFile instead."
+			  "deprecated": true
 			},
 			"extractToPath": {
 			  "type": "string",
