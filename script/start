@@ -2,6 +2,7 @@
 # script/start
 # Start the local WordPress Playground development server.
 set -euo pipefail
+shopt -s nullglob dotglob
 
 cd "$(dirname "$0")/.."
 
@@ -25,7 +26,14 @@ if [ -f "$SITE_DIR/wp-config.php" ]; then
     cp data/database/.ht.sqlite "$DB_DIR/.ht.sqlite"
     echo "==> Restored database from ./data/database"
   fi
-  if [ -n "$(ls -A data/uploads 2>/dev/null | grep -v '\.gitkeep')" ]; then
+  UPLOAD_FILES=(data/uploads/*)
+  HAS_REAL_UPLOADS=false
+  for f in "${UPLOAD_FILES[@]}"; do
+    [[ "$(basename "$f")" == ".gitkeep" ]] && continue
+    HAS_REAL_UPLOADS=true
+    break
+  done
+  if $HAS_REAL_UPLOADS; then
     mkdir -p "$UPLOADS_DIR"
     cp -r data/uploads/. "$UPLOADS_DIR/"
     echo "==> Restored uploads from ./data/uploads"
