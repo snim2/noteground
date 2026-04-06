@@ -23,13 +23,6 @@
       }
     },
     {
-      "step": "installPlugin",
-      "pluginData": {
-        "resource": "wordpress.org/plugins",
-        "slug": "tablepress"
-      }
-    },
-    {
       "step": "installTheme",
       "themeData": {
         "resource": "wordpress.org/themes",
