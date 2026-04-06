@@ -30,6 +30,8 @@ echo "==> Saving snapshot: $TIMESTAMP"
 
 cd "$DATA_DIR"
 git add database/ uploads/
+# Only commit bespoke themes and plugins, not those loaded via the blueprint.json
+git add -u themes/ plugins/
 git diff --cached --quiet && echo "    No changes to save." && exit 0
 git commit -m "notes: $TIMESTAMP"
 git push
