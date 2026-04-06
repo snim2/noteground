@@ -44,9 +44,9 @@ _on_interrupt() {
 
 trap '_cleanup' EXIT
 trap '_on_interrupt' INT
-node script/merge-blueprints > "$BLUEPRINT"
-if [ -f blueprint-local.json ]; then
-  echo "==> Merged blueprint.json + blueprint-local.json"
+node script/merge-blueprints "$DATA_DIR/blueprint-local.json" > "$BLUEPRINT"
+if [ -f "$DATA_DIR/blueprint-local.json" ]; then
+  echo "==> Merged blueprint.json + $DATA_DIR/blueprint-local.json"
   echo "==> Validating merged blueprint JSON against schema..."
   check-jsonschema --schemafile schemas/blueprint.json "$BLUEPRINT"
 fi
