@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # script/save
-# Copy the current database and media library out of the WP Playground site
-# cache into the private data repo, then commit and push.
+# Commit and push the private data repo. The database and uploads are mounted
+# directly from the data repo so no copying is needed.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -19,21 +19,10 @@ if [ ! -d "$DATA_DIR/.git" ]; then
   exit 1
 fi
 
-DB_FILE="$SITE_DIR/wp-content/database/.ht.sqlite"
-UPLOADS_DIR="$SITE_DIR/wp-content/uploads"
-
-if [ ! -f "$DB_FILE" ]; then
-  echo "Error: no database found at $DB_FILE"
+if [ ! -f "$DATA_DIR/database/.ht.sqlite" ]; then
+  echo "Error: no database found at ./$DATA_DIR/database/.ht.sqlite"
   echo "Start WordPress at least once with ./script/start before saving."
   exit 1
-fi
-
-mkdir -p "$DATA_DIR/database" "$DATA_DIR/uploads"
-
-echo "==> Copying database and uploads from site cache..."
-cp "$DB_FILE" "$DATA_DIR/database/.ht.sqlite"
-if [ -d "$UPLOADS_DIR" ] && [ -n "$(ls -A "$UPLOADS_DIR")" ]; then
-  cp -r "$UPLOADS_DIR/." "$DATA_DIR/uploads/"
 fi
 
 TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"

@@ -16,36 +16,7 @@ source "$(dirname "$0")/lib/profile"
 
 mkdir -p "$DATA_DIR/database" "$DATA_DIR/uploads" "$DATA_DIR/plugins" "$DATA_DIR/themes"
 
-DB_DIR="$SITE_DIR/wp-content/database"
-UPLOADS_DIR="$SITE_DIR/wp-content/uploads"
-
 [ "$PROFILE_LABEL" = "default" ] || echo "==> Profile: $PROFILE_LABEL (data dir: ./$DATA_DIR)"
-
-# Only restore saved data if the site is already fully initialized.
-# Seeding into a partial site directory causes WP Playground to fail during blueprint execution.
-if [ -f "$SITE_DIR/wp-config.php" ]; then
-  if [ -f "$DATA_DIR/database/.ht.sqlite" ]; then
-    cp "$DATA_DIR/database/.ht.sqlite" "$DB_DIR/.ht.sqlite"
-    echo "==> Restored database from ./$DATA_DIR/database"
-  fi
-  UPLOAD_FILES=("$DATA_DIR/uploads/"*)
-  HAS_REAL_UPLOADS=false
-  for f in "${UPLOAD_FILES[@]}"; do
-    [[ "$(basename "$f")" == ".gitkeep" ]] && continue
-    HAS_REAL_UPLOADS=true
-    break
-  done
-  if $HAS_REAL_UPLOADS; then
-    mkdir -p "$UPLOADS_DIR"
-    cp -r "$DATA_DIR/uploads/." "$UPLOADS_DIR/"
-    echo "==> Restored uploads from ./$DATA_DIR/uploads"
-  fi
-else
-  echo "    Site not yet initialized — starting fresh."
-  if [ -f "$DATA_DIR/database/.ht.sqlite" ]; then
-    echo "    Your saved notes will be restored on the next start."
-  fi
-fi
 
 _BPTMP="$(mktemp /tmp/blueprint-XXXXXX)"
 BLUEPRINT="${_BPTMP}.json"
@@ -88,7 +59,10 @@ echo "    Credentials: admin / password"
 echo "    Press Ctrl+C to stop."
 echo ""
 
-MOUNT_ARGS=()
+MOUNT_ARGS=(
+  --mount "$(pwd)/$DATA_DIR/database:/wordpress/wp-content/database"
+  --mount "$(pwd)/$DATA_DIR/uploads:/wordpress/wp-content/uploads"
+)
 for plugin_dir in "$DATA_DIR/plugins/"/*/; do
   [ -d "$plugin_dir" ] || continue
   name="$(basename "$plugin_dir")"
@@ -102,7 +76,7 @@ for theme_dir in "$DATA_DIR/themes/"/*/; do
   echo "==> Mounting custom theme: $name"
 done
 
-./node_modules/.bin/wp-playground-cli start \
+./node_modules/.bin/wp-playground-cli server \
   --blueprint="$BLUEPRINT" \
   --port="$PORT" \
   --login \
