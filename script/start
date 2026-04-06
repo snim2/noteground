@@ -30,8 +30,9 @@ if [ -n "$(ls -A data/uploads 2>/dev/null | grep -v '\.gitkeep')" ]; then
   echo "==> Restored uploads from ./data/uploads"
 fi
 
-BLUEPRINT="$(mktemp /tmp/blueprint-XXXXXX)"
-trap 'rm -f "$BLUEPRINT"' EXIT
+_BPTMP="$(mktemp /tmp/blueprint-XXXXXX)"
+BLUEPRINT="${_BPTMP}.json"
+trap 'rm -f "$_BPTMP" "$BLUEPRINT"' EXIT
 node script/merge-blueprints > "$BLUEPRINT"
 if [ -f blueprint-local.json ]; then
   echo "==> Merged blueprint.json + blueprint-local.json"
