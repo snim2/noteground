@@ -21,7 +21,7 @@ WordPress Playground runs WordPress entirely in a local Node.js process (via Web
 
 WP Playground caches the site at a deterministic path derived from the project directory (SHA-256 of the absolute path):
 
-```
+```bash
 ~/.wordpress-playground/sites/<sha256-of-project-path>/
 ```
 
@@ -29,7 +29,7 @@ WP Playground caches the site at a deterministic path derived from the project d
 
 ## How public/private separation works
 
-```
+```plaintext
 scratch-wordpress/          ← this repo (public)
 └── data/                   ← your private repo, cloned here (gitignored)
     ├── database/
@@ -141,7 +141,7 @@ All `data*` directories are gitignored. No note content ever touches this public
 
 ### File layout with multiple profiles
 
-```
+```plaintext
 .
 ├── data/               ← default profile (your original private repo)
 ├── data-work/          ← work profile private repo
@@ -185,7 +185,7 @@ Example — switch to PHP 8.2 and install an extra plugin:
 
 ## File layout
 
-```
+```plaintext
 .
 ├── blueprint.json          # WordPress Playground configuration (shared)
 ├── blueprint-local.json    # Per-user overrides — gitignored, optional
