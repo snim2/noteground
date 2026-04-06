@@ -209,5 +209,5 @@ Example — switch to PHP 8.2 and install an extra plugin:
 └── README.md
 ```
 
-Note that `npm` has shortcuts to all user-run scripts, e.g. npm run setup`,
+Note that `npm` has shortcuts to all user-run scripts, e.g. `npm run setup`,
 `npm start`, `npm run reset`, `npm run save`, etc.
