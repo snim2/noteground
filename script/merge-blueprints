@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Merge blueprint.json with blueprint-local.json (if it exists).
 // - Top-level keys from blueprint-local.json override blueprint.json
-// - steps arrays are concatenated: base steps first, then local steps
+// - steps and plugins arrays are concatenated: base first, then local
 // Writes merged JSON to stdout.
 
 const fs = require('fs');
@@ -22,6 +22,7 @@ const local = JSON.parse(fs.readFileSync(localPath, 'utf8'));
 const merged = {
   ...base,
   ...local,
+  plugins: [...(base.plugins ?? []), ...(local.plugins ?? [])],
   steps: [...(base.steps ?? []), ...(local.steps ?? [])],
 };
 
